@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plasma9</title>
+
+  <!-- DM Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f6f3ee;      /* off-white / cream */
+      --text: #0f0f0f;    /* near-black */
+      --muted: #6f6f6f;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "DM Mono", monospace;
+    }
+
+    body {
+      height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wrap {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 500;
+      letter-spacing: -0.03em;
+    }
+
+    p {
+      margin-top: 14px;
+      font-size: 1rem;
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 42px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>plasma9</h1>
+    <p>coming soon</p>
+    <footer>© <span id="year"></span></footer>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
