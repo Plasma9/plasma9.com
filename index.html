@@ -192,6 +192,43 @@
       lastMouseMoveTime = Date.now();
     });
 
+    // Mobile gyroscope support
+    let gyro = { x: 0, y: 0 };
+    let isGyroActive = false;
+    
+    if (window.DeviceOrientationEvent) {
+      // Request permission for iOS 13+
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        // For iOS, we'll request permission on first touch
+        window.addEventListener('touchstart', () => {
+          DeviceOrientationEvent.requestPermission()
+            .then(permissionState => {
+              if (permissionState === 'granted') {
+                enableGyro();
+              }
+            })
+            .catch(console.error);
+        }, { once: true });
+      } else {
+        // For Android and other devices
+        enableGyro();
+      }
+    }
+    
+    function enableGyro() {
+      window.addEventListener('deviceorientation', (event) => {
+        if (event.beta !== null && event.gamma !== null) {
+          // Beta is front-to-back tilt (-180 to 180)
+          // Gamma is left-to-right tilt (-90 to 90)
+          // Normalize to -1 to 1 range
+          gyro.x = Math.max(-1, Math.min(1, event.gamma / 45));
+          gyro.y = Math.max(-1, Math.min(1, (event.beta - 90) / 45));
+          isGyroActive = true;
+          lastMouseMoveTime = Date.now();
+        }
+      });
+    }
+
     let model;
     let currentRotationX = 0;
     let currentRotationY = 0;
@@ -280,8 +317,13 @@
       });
 
       const timeSinceLastMove = Date.now() - lastMouseMoveTime;
-      const targetRotationX = timeSinceLastMove > mouseResetTimeout ? 0 : -mouse.y * Math.PI * 0.3;
-      const targetRotationY = timeSinceLastMove > mouseResetTimeout ? 0 : -mouse.x * Math.PI * 0.3;
+      
+      // Use gyro data if available (mobile), otherwise use mouse
+      const inputX = isGyroActive ? gyro.x : mouse.x;
+      const inputY = isGyroActive ? gyro.y : mouse.y;
+      
+      const targetRotationX = timeSinceLastMove > mouseResetTimeout ? 0 : -inputY * Math.PI * 0.3;
+      const targetRotationY = timeSinceLastMove > mouseResetTimeout ? 0 : -inputX * Math.PI * 0.3;
 
       const maxRotation = Math.PI * 0.15;
       const clampedTargetX = Math.max(-maxRotation, Math.min(maxRotation, targetRotationX));
