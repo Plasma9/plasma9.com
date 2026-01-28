@@ -69,6 +69,49 @@
       font-size: 0.8rem;
       color: var(--muted);
     }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+      #info {
+        bottom: 10%;
+        padding: 0 20px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      p {
+        font-size: 0.9rem;
+        margin-top: 10px;
+      }
+
+      footer {
+        margin-top: 30px;
+        font-size: 0.7rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #info {
+        bottom: 8%;
+        padding: 0 15px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        font-size: 0.85rem;
+        margin-top: 8px;
+      }
+
+      footer {
+        margin-top: 24px;
+        font-size: 0.65rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -116,20 +159,28 @@
     directionalLight.position.set(5, 5, 5);
     scene.add(directionalLight);
 
-    const starsGeometry = new THREE.BufferGeometry();
-    const starCount = 2000;
-    const positions = new Float32Array(starCount * 3);
+    // Create multiple star fields for continuous looping
+    const starFields = [];
+    const starFieldCount = 3;
+    const starCount = 1200;
     
-    for (let i = 0; i < starCount * 3; i += 3) {
-      positions[i] = (Math.random() - 0.5) * 500;
-      positions[i + 1] = (Math.random() - 0.5) * 500;
-      positions[i + 2] = (Math.random() - 0.5) * 500;
+    for (let field = 0; field < starFieldCount; field++) {
+      const starsGeometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(starCount * 3);
+      
+      for (let i = 0; i < starCount * 3; i += 3) {
+        positions[i] = (Math.random() - 0.5) * 1500;
+        positions[i + 1] = (Math.random() - 0.5) * 1500;
+        positions[i + 2] = (Math.random() - 0.5) * 1500;
+      }
+      
+      starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.8 });
+      const stars = new THREE.Points(starsGeometry, starsMaterial);
+      stars.position.z = field * 300 - 150;
+      scene.add(stars);
+      starFields.push(stars);
     }
-    
-    starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5 });
-    const stars = new THREE.Points(starsGeometry, starsMaterial);
-    scene.add(stars);
 
     const mouse = { x: 0, y: 0 };
     let lastMouseMoveTime = Date.now();
@@ -218,11 +269,15 @@
 
       time += 0.001;
 
-      const depthMotion = ((time * 8) % 300) - 150;
-      
-      stars.position.x = 0;
-      stars.position.y = 0;
-      stars.position.z = depthMotion;
+      // Animate each star field for continuous looping
+      starFields.forEach(field => {
+        field.position.z += 0.008;
+        
+        // When a star field passes through, move it to the back
+        if (field.position.z > 150) {
+          field.position.z -= 300 * starFieldCount;
+        }
+      });
 
       const timeSinceLastMove = Date.now() - lastMouseMoveTime;
       const targetRotationX = timeSinceLastMove > mouseResetTimeout ? 0 : -mouse.y * Math.PI * 0.3;
