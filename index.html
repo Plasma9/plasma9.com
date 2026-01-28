@@ -159,7 +159,6 @@
     directionalLight.position.set(5, 5, 5);
     scene.add(directionalLight);
 
-    // Create multiple star fields for continuous looping
     const starFields = [];
     const starFieldCount = 3;
     const starCount = 1200;
@@ -192,7 +191,6 @@
       lastMouseMoveTime = Date.now();
     });
 
-    // Touch support for mobile
     window.addEventListener('touchmove', (event) => {
       if (event.touches.length > 0) {
         const touch = event.touches[0];
@@ -211,14 +209,11 @@
       }
     });
 
-    // Mobile gyroscope support
     let gyro = { x: 0, y: 0 };
     let isGyroActive = false;
     
     if (window.DeviceOrientationEvent) {
-      // Request permission for iOS 13+
       if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-        // For iOS, we'll request permission on first touch
         window.addEventListener('touchstart', () => {
           DeviceOrientationEvent.requestPermission()
             .then(permissionState => {
@@ -229,7 +224,6 @@
             .catch(console.error);
         }, { once: true });
       } else {
-        // For Android and other devices
         enableGyro();
       }
     }
@@ -237,9 +231,6 @@
     function enableGyro() {
       window.addEventListener('deviceorientation', (event) => {
         if (event.beta !== null && event.gamma !== null) {
-          // Beta is front-to-back tilt (-180 to 180)
-          // Gamma is left-to-right tilt (-90 to 90)
-          // Normalize to -1 to 1 range
           gyro.x = Math.max(-1, Math.min(1, event.gamma / 45));
           gyro.y = Math.max(-1, Math.min(1, (event.beta - 90) / 45));
           isGyroActive = true;
@@ -264,17 +255,6 @@
         g: Math.round(255 * f(8)),
         b: Math.round(255 * f(4))
       };
-    }
-
-    function createDefaultObject() {
-      const geometry = new THREE.BoxGeometry(2, 2, 2);
-      const material = new THREE.MeshPhongMaterial({
-        color: 0x156064,
-        shininess: 100
-      });
-      const cube = new THREE.Mesh(geometry, material);
-      scene.add(cube);
-      return cube;
     }
 
     function loadOBJ(url) {
@@ -310,12 +290,10 @@
         undefined,
         (error) => {
           console.error('Error loading OBJ file:', error);
-          model = createDefaultObject();
         }
       );
     }
 
-    model = createDefaultObject();
     loadOBJ('model.obj');
 
     let time = 0;
@@ -325,11 +303,9 @@
 
       time += 0.001;
 
-      // Animate each star field for continuous looping
       starFields.forEach(field => {
         field.position.z += 0.008;
         
-        // When a star field passes through, move it to the back
         if (field.position.z > 150) {
           field.position.z -= 300 * starFieldCount;
         }
@@ -337,7 +313,6 @@
 
       const timeSinceLastMove = Date.now() - lastMouseMoveTime;
       
-      // Use gyro data if available (mobile), otherwise use mouse
       const inputX = isGyroActive ? gyro.x : mouse.x;
       const inputY = isGyroActive ? gyro.y : mouse.y;
       
@@ -421,18 +396,22 @@
     let mouseX = 0;
     let mouseY = 0;
 
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    const pushStrength = isMobile ? 15 : 8;
+    const maxDistance = isMobile ? 200 : 150;
+
     document.addEventListener('mousemove', (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
     });
 
-    // Touch support for text animation
     document.addEventListener('touchmove', (e) => {
       if (e.touches.length > 0) {
         mouseX = e.touches[0].clientX;
         mouseY = e.touches[0].clientY;
+        e.preventDefault();
       }
-    });
+    }, { passive: false });
 
     document.addEventListener('touchstart', (e) => {
       if (e.touches.length > 0) {
@@ -450,9 +429,6 @@
         const dx = centerX - mouseX;
         const dy = centerY - mouseY;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        const maxDistance = 150;
-        const pushStrength = 8;
         
         if (distance < maxDistance) {
           const force = (1 - distance / maxDistance) * pushStrength;
