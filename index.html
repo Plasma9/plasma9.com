@@ -192,6 +192,25 @@
       lastMouseMoveTime = Date.now();
     });
 
+    // Touch support for mobile
+    window.addEventListener('touchmove', (event) => {
+      if (event.touches.length > 0) {
+        const touch = event.touches[0];
+        mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+        lastMouseMoveTime = Date.now();
+      }
+    });
+
+    window.addEventListener('touchstart', (event) => {
+      if (event.touches.length > 0) {
+        const touch = event.touches[0];
+        mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+        lastMouseMoveTime = Date.now();
+      }
+    });
+
     // Mobile gyroscope support
     let gyro = { x: 0, y: 0 };
     let isGyroActive = false;
@@ -405,6 +424,21 @@
     document.addEventListener('mousemove', (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
+    });
+
+    // Touch support for text animation
+    document.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) {
+        mouseX = e.touches[0].clientX;
+        mouseY = e.touches[0].clientY;
+      }
+    });
+
+    document.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) {
+        mouseX = e.touches[0].clientX;
+        mouseY = e.touches[0].clientY;
+      }
     });
 
     function animateLetters() {
