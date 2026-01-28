@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -43,6 +44,12 @@
       transform: translateX(-50%);
       text-align: center;
       pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.5s;
+    }
+
+    #info.hidden {
+      opacity: 0;
     }
 
     h1 {
@@ -50,6 +57,7 @@
       font-weight: 500;
       letter-spacing: -0.03em;
       display: inline-block;
+      font-family: 'Press Start 2P', monospace;
     }
 
     h1 span {
@@ -60,14 +68,179 @@
 
     p {
       margin-top: 14px;
-      font-size: 1rem;
+      font-size: 0.7rem;
       color: var(--muted);
+      font-family: 'Press Start 2P', monospace;
     }
 
     footer {
       margin-top: 42px;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       color: var(--muted);
+      font-family: 'Press Start 2P', monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    #score {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 1.5rem;
+      color: var(--text);
+      opacity: 0;
+      transition: opacity 0.5s;
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    #score.active {
+      opacity: 1;
+    }
+
+    #lives {
+      position: absolute;
+      bottom: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      color: var(--text);
+      opacity: 0;
+      transition: opacity 0.5s;
+      letter-spacing: 10px;
+      text-align: center;
+    }
+
+    #lives.active {
+      opacity: 1;
+    }
+
+    #playButton {
+      position: absolute;
+      top: 55%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px 40px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1.5rem;
+      color: var(--text);
+      background: rgba(10, 5, 21, 0.8);
+      border: 3px solid var(--text);
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+
+    #playButton.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #playButton:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    #gamePrompt {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Press Start 2P', monospace;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+
+    #gamePrompt.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #gamePrompt p {
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 30px;
+      line-height: 1.8;
+    }
+
+    .promptButtons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .promptButton {
+      padding: 15px 30px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1rem;
+      color: var(--text);
+      background: rgba(10, 5, 21, 0.8);
+      border: 3px solid var(--text);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .promptButton:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.05);
+    }
+
+    #gameOver {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 2rem;
+      color: var(--text);
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+
+    #gameOver.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #gameOver > div {
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    #gameOver p {
+      font-size: 1rem;
+      margin-top: 20px;
+      margin-bottom: 30px;
+      color: var(--text);
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    .gameOverButtons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .gameOverButton {
+      padding: 15px 30px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1rem;
+      color: var(--text);
+      background: rgba(10, 5, 21, 0.8);
+      border: 3px solid var(--text);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .gameOverButton:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.05);
     }
 
     /* Mobile Responsive Styles */
@@ -78,17 +251,39 @@
       }
 
       h1 {
-        font-size: 2rem;
+        font-size: 1.2rem;
       }
 
       p {
-        font-size: 0.9rem;
+        font-size: 0.6rem;
         margin-top: 10px;
       }
 
       footer {
         margin-top: 30px;
+        font-size: 0.5rem;
+      }
+
+      #gamePrompt p {
         font-size: 0.7rem;
+      }
+
+      .promptButton {
+        font-size: 0.8rem;
+        padding: 12px 24px;
+      }
+
+      #gameOver {
+        font-size: 1.2rem;
+      }
+
+      #gameOver p {
+        font-size: 0.7rem;
+      }
+
+      .gameOverButton {
+        font-size: 0.8rem;
+        padding: 12px 24px;
       }
     }
 
@@ -99,17 +294,47 @@
       }
 
       h1 {
-        font-size: 1.5rem;
+        font-size: 0.9rem;
       }
 
       p {
-        font-size: 0.85rem;
+        font-size: 0.5rem;
         margin-top: 8px;
       }
 
       footer {
         margin-top: 24px;
-        font-size: 0.65rem;
+        font-size: 0.4rem;
+      }
+
+      #gamePrompt p {
+        font-size: 0.6rem;
+      }
+
+      .promptButton {
+        font-size: 0.7rem;
+        padding: 10px 20px;
+      }
+
+      #gameOver {
+        font-size: 1rem;
+      }
+
+      #gameOver p {
+        font-size: 0.6rem;
+      }
+
+      .gameOverButton {
+        font-size: 0.7rem;
+        padding: 10px 20px;
+      }
+
+      #score {
+        font-size: 1rem;
+      }
+
+      #lives {
+        font-size: 1.5rem;
       }
     }
   </style>
@@ -117,10 +342,28 @@
 <body>
   <canvas id="canvas"></canvas>
   
+  <div id="score">0</div>
+  <div id="lives">♡♡♡</div>
+  <div id="gamePrompt">
+    <p>would you like<br>to play a game?</p>
+    <div class="promptButtons">
+      <button class="promptButton" id="promptYes">YES</button>
+      <button class="promptButton" id="promptNo">NO</button>
+    </div>
+  </div>
+  <div id="gameOver">
+    <div>GAME OVER</div>
+    <p>play again?</p>
+    <div class="gameOverButtons">
+      <button class="gameOverButton" id="yesButton">YES</button>
+      <button class="gameOverButton" id="noButton">NO</button>
+    </div>
+  </div>
+  
   <div id="info">
     <h1 id="plasma-text">plasma9</h1>
     <p>coming soon<span id="dots"></span></p>
-    <footer>© <span id="year"></span></footer>
+    <footer><span id="year"></span></footer>
   </div>
 
   <script type="importmap">
@@ -267,7 +510,9 @@
           object.traverse((child) => {
             if (child instanceof THREE.Mesh) {
               child.material = new THREE.MeshBasicMaterial({
-                color: 0xffffff
+                color: 0xffffff,
+                transparent: true,
+                opacity: 1
               });
               child.castShadow = false;
               child.receiveShadow = false;
@@ -297,11 +542,370 @@
     loadOBJ('model.obj');
 
     let time = 0;
+    let gameActive = false;
+    let gameStarted = false;
+    let score = 0;
+    let lives = 3;
+    let gameTime = 0;
+    const asteroids = [];
+    const projectiles = [];
+    const particles = [];
+
+    let logoClickEnabled = true;
+
+    canvas.addEventListener('click', (event) => {
+      if (logoClickEnabled && !gameActive && !gameStarted) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+        
+        if (distance < 200) {
+          document.getElementById('info').classList.add('hidden');
+          
+          if (model) {
+            model.traverse((child) => {
+              if (child.material) {
+                child.material.transparent = true;
+                const fadeOut = setInterval(() => {
+                  if (child.material.opacity > 0) {
+                    child.material.opacity -= 0.05;
+                  } else {
+                    clearInterval(fadeOut);
+                  }
+                }, 30);
+              }
+            });
+          }
+          
+          setTimeout(() => {
+            document.getElementById('gamePrompt').classList.add('visible');
+          }, 500);
+          
+          logoClickEnabled = false;
+        }
+      }
+    });
+
+    canvas.addEventListener('touchstart', (event) => {
+      if (logoClickEnabled && !gameActive && !gameStarted) {
+        const rect = canvas.getBoundingClientRect();
+        const touch = event.touches[0];
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+        
+        if (distance < 200) {
+          document.getElementById('info').classList.add('hidden');
+          
+          if (model) {
+            model.traverse((child) => {
+              if (child.material) {
+                child.material.transparent = true;
+                const fadeOut = setInterval(() => {
+                  if (child.material.opacity > 0) {
+                    child.material.opacity -= 0.05;
+                  } else {
+                    clearInterval(fadeOut);
+                  }
+                }, 30);
+              }
+            });
+          }
+          
+          setTimeout(() => {
+            document.getElementById('gamePrompt').classList.add('visible');
+          }, 500);
+          
+          logoClickEnabled = false;
+        }
+      }
+    });
+
+    document.getElementById('promptYes').addEventListener('click', startGame);
+    document.getElementById('promptNo').addEventListener('click', () => {
+      document.getElementById('gamePrompt').classList.remove('visible');
+      document.getElementById('info').classList.remove('hidden');
+      logoClickEnabled = true;
+      
+      if (model) {
+        model.traverse((child) => {
+          if (child.material) {
+            child.material.opacity = 1;
+          }
+        });
+      }
+    });
+    document.getElementById('yesButton').addEventListener('click', restartGame);
+    document.getElementById('noButton').addEventListener('click', () => {
+      document.getElementById('gameOver').classList.remove('visible');
+      document.getElementById('info').classList.remove('hidden');
+      document.getElementById('score').classList.remove('active');
+      document.getElementById('lives').classList.remove('active');
+      logoClickEnabled = true;
+      gameStarted = false;
+      
+      if (model) {
+        model.traverse((child) => {
+          if (child.material) {
+            child.material.opacity = 1;
+          }
+        });
+      }
+      
+      setTimeout(() => {
+        document.getElementById('playButton').classList.add('visible');
+        document.getElementById('meanwhileText').classList.add('visible');
+      }, 500);
+    });
+
+    function startGame() {
+      gameActive = true;
+      gameStarted = true;
+      gameTime = 0;
+      document.getElementById('gamePrompt').classList.remove('visible');
+      document.getElementById('info').classList.add('hidden');
+      document.getElementById('score').classList.add('active');
+      document.getElementById('lives').classList.add('active');
+      
+      if (model) {
+        model.traverse((child) => {
+          if (child.material) {
+            child.material.transparent = true;
+            const fadeOut = setInterval(() => {
+              if (child.material.opacity > 0) {
+                child.material.opacity -= 0.05;
+              } else {
+                clearInterval(fadeOut);
+              }
+            }, 30);
+          }
+        });
+      }
+    }
+
+    function restartGame() {
+      score = 0;
+      lives = 3;
+      gameActive = true;
+      gameStarted = true;
+      gameTime = 0;
+      document.getElementById('score').textContent = '0';
+      document.getElementById('lives').textContent = '♡♡♡';
+      document.getElementById('gameOver').classList.remove('visible');
+      document.getElementById('info').classList.add('hidden');
+      document.getElementById('score').classList.add('active');
+      document.getElementById('lives').classList.add('active');
+      
+      if (model) {
+        model.traverse((child) => {
+          if (child.material) {
+            child.material.opacity = 0;
+          }
+        });
+      }
+      
+      asteroids.forEach(a => scene.remove(a));
+      projectiles.forEach(p => scene.remove(p));
+      particles.forEach(p => scene.remove(p));
+      asteroids.length = 0;
+      projectiles.length = 0;
+      particles.length = 0;
+    }
+
+    function loseLife() {
+      lives--;
+      const hearts = ['', '♡', '♡♡', '♡♡♡'];
+      document.getElementById('lives').textContent = hearts[lives];
+      
+      if (lives <= 0) {
+        gameActive = false;
+        
+        asteroids.forEach((asteroid) => {
+          createParticles(asteroid.position);
+          scene.remove(asteroid);
+        });
+        asteroids.length = 0;
+        
+        setTimeout(() => {
+          document.getElementById('gameOver').classList.add('visible');
+        }, 500);
+      }
+    }
+
+    function createAsteroid() {
+      const size = 2 + Math.random() * 2;
+      const geometry = new THREE.IcosahedronGeometry(size, 0);
+      const material = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.7
+      });
+      const asteroid = new THREE.Mesh(geometry, material);
+      
+      const aspectRatio = window.innerWidth / window.innerHeight;
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 80 + Math.random() * 30;
+      const horizontalScale = aspectRatio > 1.5 ? 1.2 : (aspectRatio > 1 ? 1 : 0.8);
+      const verticalScale = aspectRatio < 0.75 ? 1.2 : (aspectRatio < 1 ? 1 : 0.8);
+      
+      asteroid.position.x = Math.cos(angle) * distance * horizontalScale * 0.5;
+      asteroid.position.y = (Math.random() - 0.5) * 40 * verticalScale * 0.5;
+      asteroid.position.z = -50 - Math.random() * 100;
+      
+      const direction = new THREE.Vector3(0, 0, 5).sub(asteroid.position).normalize();
+      const baseSpeed = 0.08 + Math.random() * 0.07;
+      const speedMultiplier = 1 + (gameTime * 0.1);
+      const speed = baseSpeed * speedMultiplier;
+      
+      asteroid.userData.velocity = {
+        x: direction.x * speed,
+        y: direction.y * speed,
+        z: direction.z * speed
+      };
+      
+      asteroid.userData.rotationSpeed = {
+        x: (Math.random() - 0.5) * 0.02,
+        y: (Math.random() - 0.5) * 0.02,
+        z: (Math.random() - 0.5) * 0.02
+      };
+      
+      scene.add(asteroid);
+      asteroids.push(asteroid);
+    }
+
+    function createProjectile(targetX, targetY) {
+      const geometry = new THREE.SphereGeometry(0.2, 8, 8);
+      const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const projectile = new THREE.Mesh(geometry, material);
+      
+      projectile.position.copy(camera.position);
+      
+      const vector = new THREE.Vector3(targetX, targetY, 0.5);
+      vector.unproject(camera);
+      const dir = vector.sub(camera.position).normalize();
+      
+      projectile.userData.velocity = dir.multiplyScalar(2);
+      
+      scene.add(projectile);
+      projectiles.push(projectile);
+    }
+
+    function createParticles(position) {
+      for (let i = 0; i < 20; i++) {
+        const geometry = new THREE.SphereGeometry(0.1, 4, 4);
+        const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const particle = new THREE.Mesh(geometry, material);
+        
+        particle.position.copy(position);
+        particle.userData.velocity = new THREE.Vector3(
+          (Math.random() - 0.5) * 0.5,
+          (Math.random() - 0.5) * 0.5,
+          (Math.random() - 0.5) * 0.5
+        );
+        particle.userData.life = 1;
+        
+        scene.add(particle);
+        particles.push(particle);
+      }
+    }
+
+    canvas.addEventListener('click', (event) => {
+      if (!gameActive) return;
+      const x = (event.clientX / window.innerWidth) * 2 - 1;
+      const y = -(event.clientY / window.innerHeight) * 2 + 1;
+      createProjectile(x, y);
+    });
+
+    canvas.addEventListener('touchstart', (event) => {
+      if (!gameActive) return;
+      const touch = event.touches[0];
+      const x = (touch.clientX / window.innerWidth) * 2 - 1;
+      const y = -(touch.clientY / window.innerHeight) * 2 + 1;
+      createProjectile(x, y);
+    });
 
     function animate() {
       requestAnimationFrame(animate);
 
       time += 0.001;
+
+      if (gameActive) {
+        gameTime += 0.001;
+        const spawnRate = Math.min(0.05, 0.012 + (gameTime * 0.0008));
+        
+        if (Math.random() < spawnRate) {
+          createAsteroid();
+        }
+
+        asteroids.forEach((asteroid, index) => {
+          asteroid.position.x += asteroid.userData.velocity.x;
+          asteroid.position.y += asteroid.userData.velocity.y;
+          asteroid.position.z += asteroid.userData.velocity.z;
+          
+          asteroid.rotation.x += asteroid.userData.rotationSpeed.x;
+          asteroid.rotation.y += asteroid.userData.rotationSpeed.y;
+          asteroid.rotation.z += asteroid.userData.rotationSpeed.z;
+          
+          if (asteroid.position.z > 10) {
+            scene.remove(asteroid);
+            asteroids.splice(index, 1);
+            loseLife();
+          }
+        });
+
+        projectiles.forEach((projectile, pIndex) => {
+          projectile.position.add(projectile.userData.velocity);
+          
+          if (projectile.position.length() > 200) {
+            scene.remove(projectile);
+            projectiles.splice(pIndex, 1);
+            return;
+          }
+          
+          asteroids.forEach((asteroid, aIndex) => {
+            const distance = projectile.position.distanceTo(asteroid.position);
+            const asteroidSize = asteroid.geometry.parameters.radius;
+            
+            if (distance < asteroidSize) {
+              createParticles(asteroid.position);
+              scene.remove(asteroid);
+              scene.remove(projectile);
+              asteroids.splice(aIndex, 1);
+              projectiles.splice(pIndex, 1);
+              score += 10;
+              document.getElementById('score').textContent = score;
+            }
+          });
+        });
+
+        particles.forEach((particle, index) => {
+          particle.position.add(particle.userData.velocity);
+          particle.userData.life -= 0.02;
+          particle.material.opacity = particle.userData.life;
+          
+          if (particle.userData.life <= 0) {
+            scene.remove(particle);
+            particles.splice(index, 1);
+          }
+        });
+      }
+
+      particles.forEach((particle, index) => {
+        particle.position.add(particle.userData.velocity);
+        particle.userData.life -= 0.02;
+        particle.material.opacity = particle.userData.life;
+        
+        if (particle.userData.life <= 0) {
+          scene.remove(particle);
+          particles.splice(index, 1);
+        }
+      });
 
       starFields.forEach(field => {
         field.position.z += 0.008;
